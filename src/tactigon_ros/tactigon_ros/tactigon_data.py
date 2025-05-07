@@ -16,7 +16,8 @@ class TactigonDataPublisher(Node):
 
         model_folder = getcwd()
 
-        TSKIN_MAC = "C0:83:3E:39:21:57"
+        #TSKIN_MAC = "C0:83:3E:39:21:57"
+        TSKIN_MAC = "C0:83:1F:34:23:38"  # MAC address of the Tactigon device
         TSKIN_HAND = Hand.RIGHT
         TSKIN_NAME = "TSKIN"
 

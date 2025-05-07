@@ -54,6 +54,8 @@ class TactigonControlNode(Node):
             self.get_logger().info(f"Live tracking mode {'enabled' if self.live_tracking else 'disabled'}.")
             return
         
+        self.get_logger().info(f"{msg.touchpad.one_finger} -- {OneFingerGesture.SINGLE_TAP.value}")
+
         if self.live_tracking and msg.touchpad.one_finger == OneFingerGesture.SINGLE_TAP.value:
             self.live_tracking = not self.live_tracking
             self.get_logger().info("Live tracking mode disabled.")

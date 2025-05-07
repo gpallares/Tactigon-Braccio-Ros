@@ -84,7 +84,7 @@ ros2 run tactigon_ros braccio_control
 Launch both together:
 
 ```bash
-ros2 launch tactigon_ros tactigon_control.launch.py
+ros2 launch tactigon_ros braccio_control.launch.py
 ```
 
 ---
