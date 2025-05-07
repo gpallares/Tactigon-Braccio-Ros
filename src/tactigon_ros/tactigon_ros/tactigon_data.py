@@ -12,7 +12,7 @@ class TactigonDataPublisher(Node):
     def __init__(self):
         super().__init__('tactigon_data_publisher')
         self.publisher = self.create_publisher(TSkinStateMsg, '/tactigon_state', 10)
-        self.timer = self.create_timer(0.1, self.publish_tactigon_data)
+        self.timer = self.create_timer(0.02, self.publish_tactigon_data)
 
         model_folder = getcwd()
 
