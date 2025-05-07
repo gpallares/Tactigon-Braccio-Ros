@@ -6,6 +6,7 @@ import time
 from tactigon_arduino_braccio import Braccio, BraccioConfig, Wrist, Gripper
 from tactigon_msgs.msg import TSkinState as TSkinStateMsg
 from tactigon_msgs.msg import Touch, Angle, Gesture
+from tactigon_msgs.msg import BraccioResponse  # Import BraccioResponse message
 from tactigon_gear import OneFingerGesture
 
 class TactigonControlNode(Node):
@@ -31,6 +32,9 @@ class TactigonControlNode(Node):
 
         # live tracking mode flag
         self.live_tracking = False
+
+        # Publisher for Braccio move result
+        self.move_result_pub = self.create_publisher(BraccioResponse, '/braccio_move_result', 10)
 
         # subscribe to the TSkinState topic
         self.sub = self.create_subscription(
@@ -132,6 +136,12 @@ class TactigonControlNode(Node):
             res, status, move_time = self.braccio.move(
                 self.x, self.y, self.z, self.wrist, self.gripper
             )
+            # Publish move result
+            move_msg = BraccioResponse()
+            move_msg.success = bool(res)
+            move_msg.status = str(status)
+            move_msg.move_time = float(move_time)
+            self.move_result_pub.publish(move_msg)
             if res:
                 self.get_logger().info(f"Moved → status: {status}, t: {move_time:.2f}s")
             else:
