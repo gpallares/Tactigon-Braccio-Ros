@@ -56,7 +56,7 @@ clone this repository
 # Build the workspace
 #Navigate to the workspace. Example:
 cd ~/ros2_ws
-colcon build --packages-select tactigon_ros
+colcon build 
 
 # Source the workspace
 source install/setup.bash
@@ -75,7 +75,7 @@ Note: make sure to source the workspace in every new terminal or after making a 
 ros2 run tactigon_ros tactigon_data
 
 # Terminal B: Tactigon control node
-ros2 run tactigon_ros braccio_control
+ros2 run braccio_ros braccio_control
 ```
 
 ### Alternative: Launch File
