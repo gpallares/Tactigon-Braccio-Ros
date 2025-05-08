@@ -1,149 +1,182 @@
-# Tactigon ROS2 Nodes Installation and Usage Guide
+# Tactigon Braccio ROS Package
 
-![ROS2 Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Ros_logo.svg/1920px-Ros_logo.svg.png)
-![Tactigon Logo](https://pypi-camo.freetls.fastly.net/90dce08d567e5182bf672f417aded1b75e57b728/68747470733a2f2f617661746172732e67697468756275736572636f6e74656e742e636f6d2f752f36333032303238353f733d32303026763d34)
+This is a ROS 2 Jazzy package running on Ubuntu 24.04 that integrates a Tactigon TSkin with a Braccio robot arm. It provides two nodes:
 
-
-Welcome to the **Tactigon ROS2 Nodes** guide! This document will help you install and use the Tactigon-based ROS2 packages.
-
----
-
-## 🚀 Prerequisites
-
-### 1️⃣ Install Ubuntu 24.04 LTS
-Download and install Ubuntu 24.04 LTS from the [official website](https://ubuntu.com/download/desktop).
-
-### 2️⃣ Install ROS2 Jazzy
-Follow the official [ROS2 Jazzy Installation Guide](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debians.html) to install ROS2 and its developer tools.
+1. **tactigon\_data\_publisher**: Connects to the Tactigon device, reads sensor data (battery, selector, touchpad, orientation, gestures), and publishes it as a custom `TSkinState` message.
+2. **tactigon\_control\_node**: Subscribes to `TSkinState`, interprets gestures and touch inputs to drive a Braccio arm, and publishes `BraccioResponse` messages with move results.
 
 ---
 
-## 📁 Setting Up the ROS2 Workspace
+## Table of Contents
 
-### 1️⃣ Download and Extract Files
-Download the compressed file containing the following folders:
-```
-models/
-src/
-```
-Extract the file into a directory named `ros2_ws`:
+* [Features](#features)
+* [Prerequisites](#prerequisites)
+* [Installation](#installation)
+* [Usage](#usage)
+
+  * [Launching Nodes Directly](#launching-nodes-directly)
+  * [Launch File](#alternative-launch-file)
+* [Topics & Messages](#topics--messages)
+* [Message Definitions](#message-definitions)
+* [Node Details](#node-details)
+
+  * [tactigon\_data\_publisher](#tactigon_data_publisher)
+  * [tactigon\_control\_node](#tactigon_control_node)
+* [Development & Customization](#development--customization)
+* [License](#license)
+
+---
+
+## Features
+
+* **Real-time Tactigon sensor publishing**: Battery level, selector wheel, touchpad, IMU orientation, and recognized gestures.
+* **Gesture-driven robot control**: Use up/down, twist, circle, swipe, and tap gestures to command a Braccio arm.
+* **Custom ROS 2 messages** for clear data structures and seamless integration.
+
+---
+
+## Prerequisites
+
+* **Operating System**: Ubuntu 24.04
+* **ROS 2 Distribution**: Jazzy Jalisco
+* **Python packages**:
+
+  ```bash
+  pip install tactigon-gear tactigon-arduino-braccio
+  ```
+  Note: the option --break-system-packages might be needed to install the libraries globally
+
+
+## Installation
+
 ```bash
-mkdir -p ~/ros2_ws
+# Clone into your ROS 2 workspace
+clone this repository
+
+# Build the workspace
+#Navigate to the workspace. Example:
 cd ~/ros2_ws
-# Extract your compressed file here
-```
+colcon build --packages-select tactigon_ros
 
-Your workspace structure should look like this:
-```
-ros2_ws/
-├── models/
-└── src/
-    ├── tactigon_msgs/          # Custom message definitions
-    └── tactigon_ros/           # Python package with nodes
-```
-
----
-
-## 🔨 Building the ROS2 Workspace
-
-### 1️⃣ Install Dependencies
-```bash
-cd ~/ros2_ws
-export PIP_BREAK_SYSTEM_PACKAGES=1
-rosdep update
-rosdep install --from-paths src --ignore-src -y 
-```
-
-### 2️⃣ Build the Workspace
-```bash
-colcon build
-```
-
-### 3️⃣ Source the Workspace
-```bash
+# Source the workspace
 source install/setup.bash
 ```
----
+Note: make sure to source the workspace in every new terminal or after making a change, otherwise the message definitions and packages cannot be found.
 
-## 📦 The `tactigon_msgs` Package
-
-This package contains custom message definitions for the Tactigon device.
-
-### Message Definitions
-📌 Located in `tactigon_msgs/msg/`
-- **TSkinState.msg** - Full state of the Tactigon device
-- **Touch.msg** - Touchpad data
-- **Angle.msg** - IMU (orientation) data
-- **Gesture.msg** - Gesture detection data
-
-### Example: `TSkinState.msg`
-```yaml
-builtin_interfaces/Time timestamp
-bool connected
-uint8 battery
-uint8 selector
-bool selector_valid
-float32 touchpad_x_pos
-float32 touchpad_y_pos
-float32 angle_roll
-float32 angle_pitch
-float32 angle_yaw
-string gesture_gesture
-float32 gesture_probability
-```
 
 ---
 
-## ▶ Running the Nodes
+## Usage
 
-### 1️⃣ Start the `tactigon_ros` Nodes
-#### `tactigon_data` - Publishes Tactigon data
+### Launching Nodes Directly
+
 ```bash
+# Terminal A: Tactigon data publisher
 ros2 run tactigon_ros tactigon_data
-```
-#### `tactigon_logger` - Logs sensor data
-```bash
-ros2 run tactigon_ros tactigon_logger
-```
-#### `tactigon_turtlesim_controller` - Controls Turtlesim via gestures
-```bash
-ros2 run turtlesim turtlesim_node
-```
-```bash
-ros2 run tactigon_ros tactigon_turtlesim_controller
+
+# Terminal B: Tactigon control node
+ros2 run tactigon_ros braccio_control
 ```
 
-### 2️⃣ Check Topics
-Verify the nodes are publishing correctly:
+### Alternative: Launch File
+
+
+Launch both together:
+
 ```bash
-ros2 topic list
-```
-Expected output:
-```
-/tactigon/state
-/tactigon/log
-/turtle1/cmd_vel
+ros2 launch tactigon_ros braccio_control.launch.py
 ```
 
 ---
 
-## ❓ Troubleshooting
+## Topics & Messages
 
-❌ **Python Virtual Environment Not Found**
-➡ Ensure `PYTHONPATH` is correctly set.
-
-❌ **Workspace Not Sourced**
-➡ Run:
-```bash
-source ~/ros2_ws/install/setup.bash
-```
-
-❌ **Package Not Found**
-➡ Ensure you ran `colcon build` and sourced it correctly.
+| Topic                  | Message Type      | Description                         |
+| ---------------------- | ----------------- | ----------------------------------- |
+| `/tactigon_state`      | `TSkinState`      | Full Tactigon device state          |
+| `/braccio_move_result` | `BraccioResponse` | Result of each Braccio move command |
 
 ---
 
+## Message Definitions
 
-📧 **Questions?** Contact me at stage_robotica@nextind.eu .
+### TSkinState.msg
 
-🎯 Happy ROS2 Development! 🚀
+```ros
+bool     connected
+float32  battery        # percentage (0–100)
+uint8    selector
+bool     selector_valid
+Touch    touchpad
+bool     touchpad_valid
+Angle    angle
+bool     angle_valid
+Gesture  gesture
+bool     gesture_valid
+
+# Selector enum
+uint8 BLE_SELECTOR_NONE=0
+uint8 BLE_SELECTOR_SENSORS=1
+uint8 BLE_SELECTOR_AUDIO=2
+```
+
+### BraccioResponse.msg
+
+```ros
+bool     success
+string   status
+float32  move_time      # seconds
+```
+
+---
+
+## Node Details
+
+### tactigon\_data
+
+* **Executable**: `tactigon_data_publisher`
+* **Publishes**: `/tactigon_state` (`TSkinState`)
+* **Functionality**:
+
+  1. Connects via Bluetooth to a Tactigon device using `tactigon_gear.TSkin`.
+  2. At 50 Hz, reads:
+
+     * **Battery** voltage → percentage
+     * **Selector** wheel value
+     * **Touchpad** gestures & X/Y positions
+     * **IMU** orientation (roll, pitch, yaw)
+     * **Gesture recognition** via `GestureConfig`
+  3. Populates and publishes a `TSkinState` message.
+
+### braccio\_control
+
+* **Executable**: `braccio_control`
+* **Subscribes to**: `/tactigon_state` (`TSkinState`)
+* **Publishes**: `/braccio_move_result` (`BraccioResponse`)
+* **Functionality**:
+
+  1. Connects to a Braccio arm via `tactigon_arduino_braccio.Braccio`.
+  2. Maintains current pose (`x, y, z, wrist, gripper`).
+  3. On each incoming `TSkinState`:
+
+     * **Swipe left**: Toggles live tracking mode.
+     * **Circle gesture**: Shuts down the node.
+     * **Up/Down gestures**: Set Z-axis height (0 mm or 150 mm).
+     * **Twist gesture**: Toggle wrist orientation (horizontal/vertical).
+     * **Single tap**: Toggle gripper open/close.
+     * **Live tracking**: Continuously map IMU angles to X/Y.
+  4. When any value changes, calls `Braccio.move(x, y, z, wrist, gripper)` and publishes a `BraccioResponse`.
+
+---
+
+## Development & Customization
+
+* **Add/Train gestures**: Update `GestureConfig` model files and extend `tactigon_msgs/Gesture`.
+* **Tune mappings**: Modify angle-to-distance scales in `tactigon_control_node`.
+* **Custom launch files**: Adapt the example or use XML/CLI arguments for parameters.
+
+---
+
+## License
+
+Made by the TactigonTeam
