@@ -22,7 +22,6 @@ This is a ROS 2 Jazzy package running on Ubuntu 24.04 that integrates a Tactigo
 
   * [tactigon\_data\_publisher](#tactigon_data_publisher)
   * [tactigon\_control\_node](#tactigon_control_node)
-* [Development & Customization](#development--customization)
 * [License](#license)
 
 ---
@@ -134,7 +133,7 @@ float32  move_time      # seconds
 
 ### tactigon\_data
 
-* **Executable**: `tactigon_data_publisher`
+* **Executable**: `tactigon_data`
 * **Publishes**: `/tactigon_state` (`TSkinState`)
 * **Functionality**:
 
