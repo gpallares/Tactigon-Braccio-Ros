@@ -164,16 +164,9 @@ float32  move_time      # seconds
      * **Up/Down gestures**: Set Z-axis height (0 mm or 150 mm).
      * **Twist gesture**: Toggle wrist orientation (horizontal/vertical).
      * **Single tap**: Toggle gripper open/close.
-     * **Live tracking**: Continuously map IMU angles to X/Y.
+     * **Live tracking: Swipe Left to toggle**: Continuously map IMU angles to X/Y.
+     * **Live tracking alternative: Tap and Hold**: Continuously map IMU angles to X/Y.
   4. When any value changes, calls `Braccio.move(x, y, z, wrist, gripper)` and publishes a `BraccioResponse`.
-
----
-
-## Development & Customization
-
-* **Add/Train gestures**: Update `GestureConfig` model files and extend `tactigon_msgs/Gesture`.
-* **Tune mappings**: Modify angle-to-distance scales in `tactigon_control_node`.
-* **Custom launch files**: Adapt the example or use XML/CLI arguments for parameters.
 
 ---
 
