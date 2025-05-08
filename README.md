@@ -158,7 +158,6 @@ float32  move_time      # seconds
   2. Maintains current pose (`x, y, z, wrist, gripper`).
   3. On each incoming `TSkinState`:
 
-     * **Swipe left**: Toggles live tracking mode.
      * **Circle gesture**: Shuts down the node.
      * **Up/Down gestures**: Set Z-axis height (0 mm or 150 mm).
      * **Twist gesture**: Toggle wrist orientation (horizontal/vertical).
